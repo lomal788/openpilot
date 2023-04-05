@@ -76,6 +76,24 @@ class SpasRspaController:
       values["CF_Spas_Chksum"] = sum(dat[:6]) % 256
     return packer.make_can_msg("SPAS11", bus, values)
 
+  def create_pas11(packer, bus): # SPAS Screen Prompts. - JPR
+    values = {
+    "CF_Gway_PASDisplayFLH": 0,
+    "CF_Gway_PASDisplayFRH": 0,
+    "CF_Gway_PASRsound": 0,
+    "CF_Gway_PASDisplayFCTR": 0, 
+    "CF_Gway_PASDisplayRCTR": 0,
+    "CF_Gway_PASFsound": 0,
+    "CF_Gway_PASDisplayRLH": 0,
+    "CF_Gway_PASDisplayRRH": 0,
+    "CF_Gway_PASCheckSound": 0,
+    "CF_Gway_PASSystemOn": 0,
+    "CF_Gway_PASOption": 0,
+    "CF_Gway_PASDistance": 0,
+    }
+    #return packer.make_can_msg("SPAS12", bus, values) # When we want to do somthing with the SPAS prompts. - JPR
+    return packer.make_can_msg("PAS11", bus, values)
+
   def create_spas12(packer, bus): # SPAS Screen Prompts. - JPR
     values = {
     "CF_Spas_HMI_Stat": 0,
@@ -273,6 +291,7 @@ class SpasRspaController:
     # SPAS12 20Hz
       if (frame % 5) == 0:
         can_sends.append(SpasRspaController.create_spas12(self.packer, CS.mdps_bus))
+        can_sends.append(SpasRspaController.create_pas11(self.packer, CS.mdps_bus))
 
   #def park_assist_system(self): ultrasonic radar sensors PAS. Will continue when I get bumper and PAS fixed. LOL
 

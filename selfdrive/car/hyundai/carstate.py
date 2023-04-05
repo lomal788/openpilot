@@ -78,8 +78,12 @@ class CarState(CarStateBase):
 
     ret.doorOpen = any([cp.vl["CGW1"]["CF_Gway_DrvDrSw"], cp.vl["CGW1"]["CF_Gway_AstDrSw"],
                         cp.vl["CGW2"]["CF_Gway_RLDrSw"], cp.vl["CGW2"]["CF_Gway_RRDrSw"]])
+    
 
-    ret.seatbeltUnlatched = cp.vl["CGW1"]["CF_Gway_DrvSeatBeltSw"] == 0
+    if self.CP.carFingerprint == CAR.KIA_FORTE_KOUP_2013:
+      ret.seatbeltUnlatched = cp.vl["CLU2"]['CF_Clu_DrvSeatBeltSw'] == 0
+    else:
+      ret.seatbeltUnlatched = cp.vl["CGW1"]["CF_Gway_DrvSeatBeltSw"] == 0
 
     self.speed_conv_to_ms = CV.MPH_TO_MS if cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"] == 1 else CV.KPH_TO_MS
 
@@ -90,12 +94,20 @@ class CarState(CarStateBase):
 
     ret.cluSpeedMs = cluSpeed * self.speed_conv_to_ms
 
-    ret.wheelSpeeds = self.get_wheel_speeds(
-      cp.vl["WHL_SPD11"]["WHL_SPD_FL"],
-      cp.vl["WHL_SPD11"]["WHL_SPD_FR"],
-      cp.vl["WHL_SPD11"]["WHL_SPD_RL"],
-      cp.vl["WHL_SPD11"]["WHL_SPD_RR"],
-    )
+    if self.CP.carFingerprint == CAR.KIA_FORTE_KOUP_2013:
+      ret.wheelSpeeds = self.get_wheel_speeds(
+        cp.vl["WHL_SPD"]["WHL_SPD_FL"],
+        cp.vl["WHL_SPD"]["WHL_SPD_FR"],
+        cp.vl["WHL_SPD"]["WHL_SPD_RL"],
+        cp.vl["WHL_SPD"]["WHL_SPD_RR"],
+      )
+    else:
+      ret.wheelSpeeds = self.get_wheel_speeds(
+        cp.vl["WHL_SPD11"]["WHL_SPD_FL"],
+        cp.vl["WHL_SPD11"]["WHL_SPD_FR"],
+        cp.vl["WHL_SPD11"]["WHL_SPD_RL"],
+        cp.vl["WHL_SPD11"]["WHL_SPD_RR"],
+      )
 
     vEgoRawWheel = (ret.wheelSpeeds.fl + ret.wheelSpeeds.fr + ret.wheelSpeeds.rl + ret.wheelSpeeds.rr) / 4.
     vEgoWheel, aEgoWheel = self.update_speed_kf(vEgoRawWheel)
@@ -151,10 +163,12 @@ class CarState(CarStateBase):
       #print("cruiseState.enabled", cp.vl["TCS13"]["ACC_REQ"])
       #print("cruiseState.available", cp.vl["TCS13"]["ACCEnable"])
     else:
-      ret.cruiseState.enabled = (cp_scc.vl["SCC12"]["ACCMode"] != 0) if not self.no_radar else \
-                                      cp.vl["LVR12"]["CF_Lvr_CruiseSet"] != 0
-      ret.cruiseState.available = (cp_scc.vl["SCC11"]["MainMode_ACC"] != 0) if not self.no_radar else \
-                                      cp.vl["EMS16"]["CRUISE_LAMP_M"] != 0
+      ret.cruiseState.enabled = bool(cp.vl["EMS16"]["CRUISE_LAMP_M"])
+                                    #(cp_scc.vl["SCC12"]["ACCMode"] != 0) if not self.no_radar else \
+                                      #cp.vl["LVR12"]["CF_Lvr_CruiseSet"] != 0
+      ret.cruiseState.available = bool(cp.vl["EMS16"]["CRUISE_LAMP_M"])
+                                    #(cp_scc.vl["SCC11"]["MainMode_ACC"] != 0) if not self.no_radar else \
+                                      #cp.vl["EMS16"]["CRUISE_LAMP_M"] != 0
       ret.cruiseState.standstill = cp_scc.vl["SCC11"]["SCCInfoDisplay"] == 4. if not self.no_radar else False
 
       ret.cruiseState.enabledAcc = ret.cruiseState.enabled
@@ -194,12 +208,25 @@ class CarState(CarStateBase):
       gear = cp.vl["CLU15"]["CF_Clu_Gear"]
     elif self.CP.carFingerprint in FEATURES["use_tcu_gears"]:
       gear = cp.vl["TCU12"]["CUR_GR"]
+    elif self.CP.carFingerprint in FEATURES["use_tcu_old_gears"]:
+      gear = cp.vl["TCU2"]["CUR_GR"]
     elif self.CP.carFingerprint in FEATURES["use_elect_gears"]:
       gear = cp.vl["ELECT_GEAR"]["Elect_Gear_Shifter"]
     else:
       gear = cp.vl["LVR12"]["CF_Lvr_Gear"]
 
-    ret.gearShifter = self.parse_gear_shifter(self.shifter_values.get(gear))
+
+    if self.CP.carFingerprint == CAR.KIA_FORTE_KOUP_2013:
+      if gear == 0:
+        ret.gear_shifter = GearShifter.park
+      elif gear == 14:
+        ret.gear_shifter = GearShifter.reverse
+      elif gear > 0 and gear < 9:    # unaware of anything over 8 currently
+        ret.gear_shifter = GearShifter.drive
+      else:
+        ret.gear_shifter = GearShifter.unknown
+    else:
+      ret.gearShifter = self.parse_gear_shifter(self.shifter_values.get(gear))
 
     if not self.CP.radarDisable:
       if self.CP.carFingerprint in FEATURES["use_fca"]:
@@ -245,10 +272,18 @@ class CarState(CarStateBase):
       if self.spas_mode_sequence == 1:
         self.sas11_angle = cp_mdps.vl["SAS11"]["SAS_Angle"]
       elif self.spas_mode_sequence == 2:
-        self.mdps11_strang = cp_mdps.vl["MDPS11"]["CR_Mdps_StrAng"]
+        if self.CP.carFingerprint == CAR.KIA_FORTE_KOUP_2013:
+          self.mdps11_strang = cp_mdps.vl["S_MDPS11"]["CR_Mdps_StrAng"]
+        else:
+          self.mdps11_strang = cp_mdps.vl["MDPS11"]["CR_Mdps_StrAng"]
+      
       self.mdps11_stat_last = self.mdps11_stat
-      self.mdps11_stat = cp_mdps.vl["MDPS11"]["CF_Mdps_Stat"]
-      ret.mdps11Stat = cp_mdps.vl["MDPS11"]["CF_Mdps_Stat"]
+      if self.CP.carFingerprint == CAR.KIA_FORTE_KOUP_2013:
+        self.mdps11_stat = cp_mdps.vl["S_MDPS11"]["CF_Mdps_Stat"]
+        ret.mdps11Stat = cp_mdps.vl["S_MDPS11"]["CF_Mdps_Stat"]
+      else:
+        self.mdps11_stat = cp_mdps.vl["MDPS11"]["CF_Mdps_Stat"]
+        ret.mdps11Stat = cp_mdps.vl["MDPS11"]["CF_Mdps_Stat"]
       
     self.lkas_error = cp_cam.vl["LKAS11"]["CF_Lkas_LdwsSysState"] == 7
     if not self.lkas_error and self.car_fingerprint not in [CAR.SONATA,CAR.PALISADE,
@@ -283,6 +318,16 @@ class CarState(CarStateBase):
       ("WHL_SPD_FR", "WHL_SPD11", 0),
       ("WHL_SPD_RL", "WHL_SPD11", 0),
       ("WHL_SPD_RR", "WHL_SPD11", 0),
+
+
+      # For Kia Forte 2013
+      ("WHL_SPD_FL", "WHL_SPD", 0),
+      ("WHL_SPD_FR", "WHL_SPD", 0),
+      ("WHL_SPD_RL", "WHL_SPD", 0),
+      ("WHL_SPD_RR", "WHL_SPD", 0),
+      ("CRUISE_LAMP_M", "EMS16"),
+      ("CRUISE_LAMP_S", "EMS16"),
+
 
       ("YAW_RATE", "ESP12", 0),
 
@@ -468,10 +513,12 @@ class CarState(CarStateBase):
         ("CF_Mdps_FailStat", "MDPS12", 0),
         ("CR_Mdps_OutTq", "MDPS12", 0),
         ("CR_Mdps_DrvTq", "MDPS11", 0),
+        ("CR_Mdps_DrvTq", "S_MDPS11", 0),
       ]
       checks += [
         ("MDPS12", 50),
         ("MDPS11", 100),
+        ("S_MDPS11", 100),
       ]
       if CP.spasEnabled:
         signals += [
@@ -479,6 +526,13 @@ class CarState(CarStateBase):
           ("CF_Mdps_Stat", "MDPS11", 0),
         ]
         checks += [("MDPS11", 100)]
+        #For Kia Forte Koup 2013
+        signals += [
+          ("CR_Mdps_StrAng", "S_MDPS11", 0),
+          ("CF_Mdps_Stat", "S_MDPS11", 0),
+        ]
+        checks += [("S_MDPS11", 100)]
+
     elif CP.mdpsBus == 1: # If MDPS bus is 1 do this for bus 0. I.E. Going to spoof! - JPR
       if CP.spasEnabled:        
         if CP.emsType == 1:

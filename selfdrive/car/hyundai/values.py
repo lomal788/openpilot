@@ -70,6 +70,8 @@ class CAR:
   K7_HEV = "KIA K7 HEV 2016-2019"
   K9 = "KIA K9 2016-2019"
 
+  KIA_FORTE_KOUP_2013 = "KIA FORTE KOUP 2013"
+
 class Buttons:
   NONE = 0
   RES_ACCEL = 1
@@ -316,6 +318,9 @@ FINGERPRINTS = {
   },{
     67: 8, 127: 8, 304: 8, 320: 8, 339: 8, 356: 4, 544: 8, 593: 8, 608: 8, 688: 5, 809: 8, 832: 8, 854: 7, 870: 7, 871: 8, 872: 8, 897: 8, 902: 8, 903: 8, 905: 8, 909: 8, 916: 8, 1056: 8, 1057: 8, 1064: 8, 1078: 4, 1107: 5, 1136: 8, 1151: 6, 1155: 8, 1156: 8, 1157: 4, 1162: 8, 1164: 8, 1168: 7, 1170: 8, 1173: 8, 1180: 8, 1184: 8, 1186: 2, 1191: 2, 1210: 8, 1227: 8, 1265: 4, 1280: 4, 1281: 4, 1287: 4, 1290: 8, 1292: 8, 1294: 8, 1312: 8, 1322: 8, 1342: 6, 1345: 8, 1348: 8, 1363: 8, 1369: 8, 1371: 8, 1378: 4, 1384: 8, 1407: 8, 1419: 8, 1427: 6, 1434: 2, 1456: 4, 1470: 8
   }],
+  CAR.KIA_FORTE_KOUP_2013: [{
+    2: 8, 24: 8, 52: 8, 66: 8, 67: 8, 80: 4, 128: 8, 129: 8, 160: 8, 161: 8, 272: 8, 288: 4, 304: 8, 305: 8, 320: 8, 339: 8, 356: 8, 357: 8, 399: 8, 497: 8, 544: 8, 608: 8, 672: 8, 688: 5, 704: 8, 790: 8, 809: 8, 848: 8, 880: 8, 898: 8, 1087: 8, 1088: 8, 1200: 8, 1201: 8, 1264: 8, 1265: 8, 1266: 8, 1296: 8, 1321: 8, 1349: 8, 1414: 3, 1435: 8, 1440: 8, 1442: 4, 1508: 3, 1680: 8
+  }],
 }
 
 FW_VERSIONS = {}
@@ -332,6 +337,10 @@ FEATURES = {
 
   # Use TCU Message for Gear Selection
   "use_tcu_gears": {CAR.K5, CAR.SONATA19, CAR.VELOSTER, CAR.SONATA_LF_TURBO, CAR.TUCSON_TL_SCC, CAR.SPORTAGE},
+
+  # Use OLD TCU Message for Gear Selection
+  "use_tcu_old_gears": [CAR.KIA_FORTE_KOUP_2013],
+
 
   # Use E_GEAR Message for Gear Selection
   "use_elect_gears": {CAR.K5_HEV, CAR.IONIQ_EV_LTD, CAR.KONA_EV, CAR.KONA_HEV, CAR.SONATA_HEV, CAR.SONATA21_HEV, CAR.SONATA21_HEV, CAR.NIRO_EV, CAR.K7_HEV,
@@ -418,6 +427,8 @@ DBC = {
   CAR.K7: dbc_dict('hyundai_kia_generic', None),
   CAR.K7_HEV: dbc_dict('hyundai_kia_generic', None),
   CAR.K9: dbc_dict('hyundai_kia_generic', None),
+
+  CAR.KIA_FORTE_KOUP_2013: dbc_dict('kia_forte_koup_2013', None),
 }
 
 STEER_THRESHOLD = 160
