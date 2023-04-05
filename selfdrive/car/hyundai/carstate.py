@@ -319,7 +319,6 @@ class CarState(CarStateBase):
       ("WHL_SPD_RL", "WHL_SPD11", 0),
       ("WHL_SPD_RR", "WHL_SPD11", 0),
 
-
       # For Kia Forte 2013
       ("WHL_SPD_FL", "WHL_SPD", 0),
       ("WHL_SPD_FR", "WHL_SPD", 0),
