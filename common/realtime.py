@@ -37,7 +37,8 @@ def set_realtime_priority(level: int) -> None:
     os.sched_setscheduler(0, os.SCHED_FIFO, os.sched_param(level))  # type: ignore[attr-defined]
 
 
-#def set_core_affinity(core: int) -> None:
+def set_core_affinity(core: int) -> None:
+  a = 1
   #if not PC:
     #os.sched_setaffinity(0, [core,])   # type: ignore[attr-defined]
 
@@ -45,7 +46,7 @@ def set_realtime_priority(level: int) -> None:
 def config_realtime_process(core: int, priority: int) -> None:
   gc.disable()
   set_realtime_priority(priority)
-  #set_core_affinity(core)
+  set_core_affinity(core)
 
 
 class Ratekeeper:
