@@ -252,6 +252,7 @@ def thermald_thread(end_event, hw_queue):
 
     pandaStates = sm['pandaStates']
     peripheralState = sm['peripheralState']
+    pandaStates.ignitionCan = True
 
     msg = read_thermal(thermal_config)
 
