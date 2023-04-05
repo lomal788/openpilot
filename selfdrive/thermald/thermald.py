@@ -252,7 +252,7 @@ def thermald_thread(end_event, hw_queue):
 
     pandaStates = sm['pandaStates']
     peripheralState = sm['peripheralState']
-    pandaStates.ignitionCan = True
+    
 
     msg = read_thermal(thermal_config)
 
@@ -270,6 +270,7 @@ def thermald_thread(end_event, hw_queue):
 
       # Set ignition based on any panda connected
       onroad_conditions["ignition"] = any(ps.ignitionLine or ps.ignitionCan for ps in pandaStates if ps.pandaType != log.PandaState.PandaType.unknown)
+      onroad_conditions["ignition"] = True
 
       pandaState = pandaStates[0]
 
