@@ -1588,3 +1588,17 @@ BO_ 1264 CLU1: 8 XXX
     SG_ CF_Clu_SMKOption : 31|1@1+ (1,0) [0|1] "" XXX
     SG_ R_TqAcnOutC : 32|8@1+ (1,0) [0|51] "Nm" XXX
     SG_ CF_Clu_Odometer : 40|24@1+ (0.1,0) [0|1.67772e+006] "km" XXX
+
+BO_ 914 S_MDPS11: 8 XXX
+    SG_ CF_Mdps_Stat : 0|4@1+ (1,0) [0|15] "" XXX
+    SG_ CR_Mdps_DrvTq : 8|12@1+ (1,0) [0|15] "" XXX
+    SG_ CR_Mdps_StrAng : 24|16@1- (1,0) [0|65535] "" XXX
+    SG_ CF_Mdps_AliveCnt : 47|8@0+ (1,0) [0|255] "" XXX
+    SG_ CF_Mdps_Chksum : 63|8@0+ (1,0) [0|255] "" XXX
+
+BO_ 870 EMS_366: 8 EMS
+    SG_ TQI_1 : 0|8@1+ (0.390625,0) [0|99.6094] "%" MDPS
+    SG_ N : 8|16@1+ (0.25,0.0) [0.0|16383.75] "rpm" MDPS
+    SG_ TQI_2 : 24|8@1+ (0.390625,0) [0|99.6094] "%" MDPS
+    SG_ VS : 40|8@1+ (1,0) [0|255] "km/h" MDPS
+    SG_ SWI_IGK : 48|1@0+ (1,0) [0|1] "" XXX

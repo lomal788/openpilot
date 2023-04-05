@@ -136,7 +136,11 @@ class CarState(CarStateBase):
                                                             cp.vl["CGW1"]['CF_Gway_TurnSigRh'])
     ret.steeringTorque = cp_mdps.vl["MDPS12"]['CR_Mdps_StrColTq']
     ret.steeringTorqueEps = cp_mdps.vl["MDPS12"]['CR_Mdps_OutTq'] / 10
-    ret.steeringWheelTorque = cp_mdps.vl["MDPS11"]['CR_Mdps_DrvTq'] 
+
+    if self.CP.carFingerprint == CAR.KIA_FORTE_KOUP_2013:
+      ret.steeringWheelTorque = cp_mdps.vl["S_MDPS11"]['CR_Mdps_DrvTq']
+    else:
+      ret.steeringWheelTorque = cp_mdps.vl["MDPS11"]['CR_Mdps_DrvTq'] 
 
     ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD
     ret.steeringPressedSPAS = abs(ret.steeringTorque) > STEER_THRESHOLD + (210 * RATE_FACTOR) if self.mdps11_stat == 5 else abs(ret.steeringTorque) > STEER_THRESHOLD
@@ -684,10 +688,12 @@ class CarState(CarStateBase):
         ("CF_Mdps_FailStat", "MDPS12", 0),
         ("CR_Mdps_OutTq", "MDPS12", 0),
         ("CR_Mdps_DrvTq", "MDPS11", 0),
+        ("CR_Mdps_DrvTq", "S_MDPS11", 0),
       ]
       checks += [
         ("MDPS12", 50),
         ("MDPS11", 100),
+        ("S_MDPS11", 100),
       ]
 
     if CP.sasBus == 1:
