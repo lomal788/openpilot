@@ -60,6 +60,7 @@ CSID_MAP = {"0": EventName.roadCameraError, "1": EventName.wideRoadCameraError, 
 class Controls:
   def __init__(self, sm=None, pm=None, can_sock=None):
     config_realtime_process(4 if TICI else 3, Priority.CTRL_HIGH)
+    # config_realtime_process(4, Priority.CTRL_HIGH)
 
     # Setup sockets
     self.pm = pm
