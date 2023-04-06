@@ -41,9 +41,10 @@ def set_realtime_priority(level: int) -> None:
 #   if not PC:
 #     os.sched_setaffinity(0, [core])   # type: ignore[attr-defined]
 
-def set_core_affinity(cores: List[int]) -> None:
+def set_core_affinity(cores: Union[int, List[int]]) -> None:
   if not PC:
-    os.sched_setaffinity(0, cores)  # pylint: disable=no-member
+    c = cores if isinstance(cores, list) else [cores, ]
+    os.sched_setaffinity(0, c)  # pylint: disable=no-member
 
 
 def config_realtime_process(cores: Union[int, List[int]], priority: int) -> None:
