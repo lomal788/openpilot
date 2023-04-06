@@ -17,6 +17,8 @@ class CarState(CarStateBase):
 
     if self.CP.carFingerprint in FEATURES["use_cluster_gears"]:
       self.shifter_values = can_define.dv["CLU15"]["CF_Clu_Gear"]
+    elif self.CP.carFingerprint in FEATURES["use_tcu_old_gears"]:
+      self.shifter_values = 0
     elif self.CP.carFingerprint in FEATURES["use_tcu_gears"]:
       self.shifter_values = can_define.dv["TCU12"]["CUR_GR"]
     else:  # preferred and elect gear methods use same definition
@@ -222,13 +224,13 @@ class CarState(CarStateBase):
 
     if self.CP.carFingerprint == CAR.KIA_FORTE_KOUP_2013:
       if gear == 0:
-        ret.gear_shifter = GearShifter.park
+        ret.gearShifter = GearShifter.park
       elif gear == 14:
-        ret.gear_shifter = GearShifter.reverse
+        ret.gearShifter = GearShifter.reverse
       elif gear > 0 and gear < 9:    # unaware of anything over 8 currently
-        ret.gear_shifter = GearShifter.drive
+        ret.gearShifter = GearShifter.drive
       else:
-        ret.gear_shifter = GearShifter.unknown
+        ret.gearShifter = GearShifter.unknown
     else:
       ret.gearShifter = self.parse_gear_shifter(self.shifter_values.get(gear))
 
@@ -337,6 +339,8 @@ class CarState(CarStateBase):
       ("CF_Gway_DrvSeatBeltInd", "CGW4", 1),
 
       ("CF_Gway_DrvSeatBeltSw", "CGW1", 0),
+      ("CF_Clu_DrvSeatBeltSw", "CLU2", 0),
+
       ("CF_Gway_DrvDrSw", "CGW1", 0),       # Driver Door
       ("CF_Gway_AstDrSw", "CGW1", 0),       # Passenger door
       ("CF_Gway_RLDrSw", "CGW2", 0),        # Rear reft door
@@ -592,6 +596,10 @@ class CarState(CarStateBase):
     if CP.carFingerprint in FEATURES["use_cluster_gears"]:
       signals += [
         ("CF_Clu_Gear", "CLU15"),
+      ]
+    elif CP.carFingerprint in FEATURES["use_tcu_old_gears"]:
+      signals += [
+        ("CUR_GR", "TCU2"),
       ]
     elif CP.carFingerprint in FEATURES["use_tcu_gears"]:
       signals += [
