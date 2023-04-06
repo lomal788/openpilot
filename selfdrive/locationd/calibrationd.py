@@ -128,6 +128,7 @@ class Calibrator():
     else:
       self.cal_status = Calibration.INVALID
 
+    self.cal_status = Calibration.CALIBRATED
     # If spread is too high, assume mounting was changed and reset to last block.
     # Make the transition smooth. Abrupt transitions are not good foor feedback loop through supercombo model.
     if max(self.calib_spread) > MAX_ALLOWED_SPREAD and self.cal_status == Calibration.CALIBRATED:
