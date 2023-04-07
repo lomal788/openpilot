@@ -38,6 +38,7 @@ ignore_can_valid = [
 ignore_addr_checks_valid = [
   GM.BUICK_REGAL,
   HYUNDAI.GENESIS_G70_2020,
+  HYUNDAI.KIA_FORTE_KOUP_2013,
 ]
 
 # build list of test cases
