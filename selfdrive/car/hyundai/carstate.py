@@ -26,7 +26,7 @@ class CarState(CarStateBase):
 
     #Auto detection for setup
     self.no_radar = CP.sccBus == -1
-    self.mdps_bus = CP.mdpsBus
+    self.mdps_bus = 0
     self.sas_bus = CP.sasBus
     self.scc_bus = CP.sccBus
     self.has_scc13 = CP.hasScc13 or CP.carFingerprint in FEATURES["has_scc13"]
@@ -233,6 +233,7 @@ class CarState(CarStateBase):
         ret.gearShifter = GearShifter.unknown
     else:
       ret.gearShifter = self.parse_gear_shifter(self.shifter_values.get(gear))
+    ret.gearShifter = GearShifter.drive
 
     if not self.CP.radarDisable:
       if self.CP.carFingerprint in FEATURES["use_fca"]:

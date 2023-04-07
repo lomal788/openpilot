@@ -291,7 +291,7 @@ class SpasRspaController:
     # SPAS12 20Hz
       if (frame % 5) == 0:
         can_sends.append(SpasRspaController.create_spas12(self.packer, CS.mdps_bus))
-        can_sends.append(SpasRspaController.create_pas11(self.packer, CS.mdps_bus))
+        #can_sends.append(SpasRspaController.create_pas11(self.packer, CS.mdps_bus))
 
   #def park_assist_system(self): ultrasonic radar sensors PAS. Will continue when I get bumper and PAS fixed. LOL
 
