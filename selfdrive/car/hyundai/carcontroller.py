@@ -166,20 +166,20 @@ class CarController():
     #                                  CS.lkas11, sys_warning, sys_state, enabled, left_lane, right_lane,
     #                                  left_lane_warning, right_lane_warning, 1, self.ldws_opt))
 
-    if frame % 2 and CS.mdps_bus: # send clu11 to mdps if it is not on bus 0
-      can_sends.append(create_clu11(self.packer, CS.mdps_bus, CS.clu11, Buttons.NONE, enabled_speed))
+    #if frame % 2 and CS.mdps_bus: # send clu11 to mdps if it is not on bus 0
+      #can_sends.append(create_clu11(self.packer, CS.mdps_bus, CS.clu11, Buttons.NONE, enabled_speed))
 
     if pcm_cancel_cmd and self.longcontrol and self.pcm_cnt == 0 and CS.out.cruiseState.enabled and not CS.CP.radarDisable and not self.mad_mode_enabled: #Make SCC cancel when op disengage or last accel is kept (IDK) -JPR
-      can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, Buttons.CANCEL, clu11_speed))
+      #can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, Buttons.CANCEL, clu11_speed))
       self.pcm_cnt += 1
     else:
       self.pcm_cnt += 1
-      can_sends.append(create_mdps12(self.packer, frame, CS.mdps12))
+      #can_sends.append(create_mdps12(self.packer, frame, CS.mdps12))
       if CS.out.cruiseState.standstill:
         # send resume at a max freq of 10Hz
         if (frame - self.last_resume_frame) * DT_CTRL > 0.1:
           # send 25 messages at a time to increases the likelihood of resume being accepted
-          can_sends.extend([create_clu11(self.packer, CS.scc_bus, CS.clu11, Buttons.RES_ACCEL, clu11_speed)] * 25)
+          #can_sends.extend([create_clu11(self.packer, CS.scc_bus, CS.clu11, Buttons.RES_ACCEL, clu11_speed)] * 25)
           self.last_resume_frame = frame
     
     if self.pcm_cnt == 20:
@@ -216,7 +216,7 @@ class CarController():
       self.gapsetting = 1 if d < 25 else 2 if d < 40 else 3 if d < 60 else 4
 
     # scc smoother
-    self.scc_smoother.update(enabled, can_sends, self.packer, CC, CS, frame, controls)
+    #self.scc_smoother.update(enabled, can_sends, self.packer, CC, CS, frame, controls)
 
     if self.longcontrol or self.rspa: # Need accel and stopping state info for long or rspa. - JPR
       stopping = controls.LoC.long_control_state == LongCtrlState.stopping
