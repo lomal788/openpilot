@@ -83,7 +83,7 @@ class CarState(CarStateBase):
     
 
     if self.CP.carFingerprint == CAR.KIA_FORTE_KOUP_2013:
-      ret.seatbeltUnlatched = cp.vl["CLU2"]['CF_Clu_DrvSeatBeltSw'] == 0
+      ret.seatbeltUnlatched = cp.vl["CLU2"]['CF_Clu_DrvSeatBeltSw'] != 0
     else:
       ret.seatbeltUnlatched = cp.vl["CGW1"]["CF_Gway_DrvSeatBeltSw"] == 0
 
