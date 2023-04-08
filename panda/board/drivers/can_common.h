@@ -214,8 +214,8 @@ void ignition_can_hook(CANPacket_t *to_push) {
 
     // Add Ignition Hook for Forte koup 2013
     // EMS16 , EMS 11
-    if ( (addr == 0x260) || (addr == 0x316) ) {
-      ignition_can = true;
+    if ( (addr == 0x260) && (len == 8) ) {
+      ignition_can = GET_BYTES_04(to_push) != 0U;
     }
 
   }
