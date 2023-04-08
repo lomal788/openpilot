@@ -153,18 +153,18 @@ class CarController():
     self.lkas11_cnt = (self.lkas11_cnt + 1) % 0x10
 
     # tester present - w/ no response (keeps radar disabled)
-    if CS.CP.radarDisable:
-      if (frame % 100) == 0:
-        can_sends.append([0x7D0, 0, b"\x02\x3E\x80\x00\x00\x00\x00\x00", 0])
+    # if CS.CP.radarDisable:
+    #   if (frame % 100) == 0:
+    #     can_sends.append([0x7D0, 0, b"\x02\x3E\x80\x00\x00\x00\x00\x00", 0])
 
-    can_sends.append(create_lkas11(self.packer, frame, self.car_fingerprint, apply_steer, lkas_active,
-                                   CS.lkas11, sys_warning, sys_state, enabled, left_lane, right_lane,
-                                   left_lane_warning, right_lane_warning, 0, self.ldws_opt))
+    # can_sends.append(create_lkas11(self.packer, frame, self.car_fingerprint, apply_steer, lkas_active,
+    #                                CS.lkas11, sys_warning, sys_state, enabled, left_lane, right_lane,
+    #                                left_lane_warning, right_lane_warning, 0, self.ldws_opt))
 
-    if CS.mdps_bus or CS.scc_bus == 1:  # send lkas11 bus 1 if mdps or scc is on bus 1
-      can_sends.append(create_lkas11(self.packer, frame, self.car_fingerprint, apply_steer, lkas_active,
-                                     CS.lkas11, sys_warning, sys_state, enabled, left_lane, right_lane,
-                                     left_lane_warning, right_lane_warning, 1, self.ldws_opt))
+    # if CS.mdps_bus or CS.scc_bus == 1:  # send lkas11 bus 1 if mdps or scc is on bus 1
+    #   can_sends.append(create_lkas11(self.packer, frame, self.car_fingerprint, apply_steer, lkas_active,
+    #                                  CS.lkas11, sys_warning, sys_state, enabled, left_lane, right_lane,
+    #                                  left_lane_warning, right_lane_warning, 1, self.ldws_opt))
 
     if frame % 2 and CS.mdps_bus: # send clu11 to mdps if it is not on bus 0
       can_sends.append(create_clu11(self.packer, CS.mdps_bus, CS.clu11, Buttons.NONE, enabled_speed))
@@ -249,22 +249,22 @@ class CarController():
       warning = 0
 
     # 20 Hz LFA MFA message
-    if frame % 5 == 0:
-      activated_hda = road_speed_limiter_get_active()
-      # activated_hda: 0 - off, 1 - main road, 2 - highway
-      if self.car_fingerprint in FEATURES["send_lfa_mfa"]:
-        can_sends.append(create_lfahda_mfc(self.packer, enabled, activated_hda, warning))
-      elif CS.has_lfa_hda:
-        can_sends.append(create_hda_mfc(self.packer, activated_hda, CS, left_lane, right_lane))
+    # if frame % 5 == 0:
+    #   activated_hda = road_speed_limiter_get_active()
+    #   # activated_hda: 0 - off, 1 - main road, 2 - highway
+    #   if self.car_fingerprint in FEATURES["send_lfa_mfa"]:
+    #     can_sends.append(create_lfahda_mfc(self.packer, enabled, activated_hda, warning))
+    #   elif CS.has_lfa_hda:
+    #     can_sends.append(create_hda_mfc(self.packer, activated_hda, CS, left_lane, right_lane))
 
-    # 5 Hz ACC options
-    if frame % 20 == 0 and CS.CP.openpilotLongitudinalControl:
-      if CS.CP.radarDisable or CS.has_scc13:
-        can_sends.extend(create_acc_opt(self.packer, CS.CP.radarDisable))
+    # # 5 Hz ACC options
+    # if frame % 20 == 0 and CS.CP.openpilotLongitudinalControl:
+    #   if CS.CP.radarDisable or CS.has_scc13:
+    #     can_sends.extend(create_acc_opt(self.packer, CS.CP.radarDisable))
 
-    # 2 Hz front radar options
-    if frame % 50 == 0 and CS.CP.radarDisable:
-      can_sends.append(create_frt_radar_opt(self.packer))
+    # # 2 Hz front radar options
+    # if frame % 50 == 0 and CS.CP.radarDisable:
+    #   can_sends.append(create_frt_radar_opt(self.packer))
 
     new_actuators = actuators.copy()
     new_actuators.steer = apply_steer / CarControllerParams.STEER_MAX

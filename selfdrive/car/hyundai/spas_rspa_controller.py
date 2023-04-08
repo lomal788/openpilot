@@ -224,7 +224,7 @@ class SpasRspaController:
         if Params().get_bool('SPASDebug'):
           print("EMS_366")
       elif emsType == 2:
-        can_sends.append(SpasRspaController.create_ems11(self.packer, CS.ems11, spas_active_stat))
+        # can_sends.append(SpasRspaController.create_ems11(self.packer, CS.ems11, spas_active_stat))
         if Params().get_bool('SPASDebug'):
           print("EMS_11")
       elif emsType == 3:
