@@ -284,7 +284,7 @@ class SpasRspaController:
         print("spas_active:", spas_active)
         print("apply angle:", apply_angle)
         print("driver torque:", CS.out.steeringWheelTorque)
-        #print("frame:", frame,'/',frame //2, '/' (frame //2) % 0x200)
+        print("frame:", frame)
 
       self.mdps11_stat_last = CS.mdps11_stat
       self.spas_active = spas_active
