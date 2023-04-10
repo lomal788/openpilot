@@ -274,7 +274,7 @@ class SpasRspaController:
         if not spas_active:
           apply_angle = CS.mdps11_strang if self.spas_mode_sequence == 2 else CS.sas11_angle
 
-        #can_sends.append(SpasRspaController.create_spas11(self.packer, self.car_fingerprint, (frame // 2), self.en_spas, apply_angle, CS.mdps_bus, self.spas_mode_sequence))
+        can_sends.append(SpasRspaController.create_spas11(self.packer, self.car_fingerprint, (frame // 2), self.en_spas, apply_angle, CS.mdps_bus, self.spas_mode_sequence))
       
       #SpasRspaController.screen_controller(self, CS, can_sends, frame) # Access SPAS12 message controller for screen Prompts. - JPR
       
