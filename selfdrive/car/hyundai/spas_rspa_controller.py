@@ -70,11 +70,12 @@ class SpasRspaController:
       "CF_Spas_PasVol": 0,
     }
     dat = packer.make_can_msg("SPAS11", 0, values)[2]
-    if car_fingerprint in CHECKSUM["crc8"]:
-      dat = dat[:6]
-      values["CF_Spas_Chksum"] = hyundai_checksum(dat)
-    else:
-      values["CF_Spas_Chksum"] = sum(dat[:6]) % 256
+    # if car_fingerprint in CHECKSUM["crc8"]:
+    #   dat = dat[:6]
+    #   values["CF_Spas_Chksum"] = hyundai_checksum(dat)
+    # else:
+    #   values["CF_Spas_Chksum"] = sum(dat[:6]) % 256
+    values["CF_Spas_Chksum"] = sum(dat[:6]) % 256
     return packer.make_can_msg("SPAS11", bus, values)
 
   def create_pas11(packer, bus): # SPAS Screen Prompts. - JPR
@@ -283,6 +284,7 @@ class SpasRspaController:
         print("spas_active:", spas_active)
         print("apply angle:", apply_angle)
         print("driver torque:", CS.out.steeringWheelTorque)
+        print("frame:", frame,'/',frame //2, '/' (frame //2) % 0x200)
 
       self.mdps11_stat_last = CS.mdps11_stat
       self.spas_active = spas_active
