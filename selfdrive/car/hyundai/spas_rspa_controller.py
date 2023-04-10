@@ -36,6 +36,7 @@ class SpasRspaController:
     self.SteeringTempUnavailable = False
     self.ens_rspa = 0
     self.spas_mode_sequence = 2 if LEGACY_SAFETY_MODE_CAR else 1
+    self.spas_mode_sequence = 2
   
   @staticmethod
   def create_rspa11(packer, frame, en_rspa, bus, enabled, setspeed, stopping, gaspressed):
@@ -60,7 +61,7 @@ class SpasRspaController:
   def create_spas11(packer, car_fingerprint, frame, en_spas, apply_steer, bus, spas_mode_sequence):
     values = {
       "CF_Spas_Stat": en_spas,
-      "CF_Spas_TestMode": 0, # Maybe if set to 1 will ignore VS... needs testing.
+      "CF_Spas_TestMode": 1, # Maybe if set to 1 will ignore VS... needs testing.
       "CR_Spas_StrAngCmd": apply_steer,
       "CF_Spas_BeepAlarm": 0,
       "CF_Spas_Mode_Seq": spas_mode_sequence, # 2 if LEGACY_SAFETY_MODE_CAR else 1,
