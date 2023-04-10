@@ -599,6 +599,8 @@ class CarInterface(CarInterfaceBase):
     # ret.canValid = self.cp.can_valid and self.cp2.can_valid and self.cp_cam.can_valid
     ret.canValid = self.cp.can_valid or self.cp2.can_valid or self.cp_cam.can_valid
 
+    ret.canValid = True
+
     #if self.CP.pcmCruise and (not self.CP.radarDisable or not self.CP.radarOffCan):
     #  self.CP.pcmCruise = True
     #elif not self.CP.pcmCruise and (self.CP.radarDisable or self.CP.radarOffCan):

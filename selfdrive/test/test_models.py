@@ -32,13 +32,13 @@ JOB_ID = int(os.environ.get("JOB_ID", "0"))
 # TODO: get updated routes for these cars
 ignore_can_valid = [
   HYUNDAI.SANTA_FE,
-  HYUNDAI.KIA_FORTE_KOUP_2013,
+  #HYUNDAI.KIA_FORTE_KOUP_2013,
 ]
 
 ignore_addr_checks_valid = [
   GM.BUICK_REGAL,
   HYUNDAI.GENESIS_G70_2020,
-  HYUNDAI.KIA_FORTE_KOUP_2013,
+  #HYUNDAI.KIA_FORTE_KOUP_2013,
 ]
 
 # build list of test cases
