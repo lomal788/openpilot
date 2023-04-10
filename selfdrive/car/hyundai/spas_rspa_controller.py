@@ -274,7 +274,7 @@ class SpasRspaController:
         if not spas_active:
           apply_angle = CS.mdps11_strang if self.spas_mode_sequence == 2 else CS.sas11_angle
 
-        can_sends.append(SpasRspaController.create_spas11(self.packer, self.car_fingerprint, (frame // 2), self.en_spas, apply_angle, CS.mdps_bus, self.spas_mode_sequence))
+        #can_sends.append(SpasRspaController.create_spas11(self.packer, self.car_fingerprint, (frame // 2), self.en_spas, apply_angle, CS.mdps_bus, self.spas_mode_sequence))
       
       SpasRspaController.screen_controller(self, CS, can_sends, frame) # Access SPAS12 message controller for screen Prompts. - JPR
       
@@ -284,7 +284,7 @@ class SpasRspaController:
         print("spas_active:", spas_active)
         print("apply angle:", apply_angle)
         print("driver torque:", CS.out.steeringWheelTorque)
-        print("frame:", frame,'/',frame //2, '/' (frame //2) % 0x200)
+        #print("frame:", frame,'/',frame //2, '/' (frame //2) % 0x200)
 
       self.mdps11_stat_last = CS.mdps11_stat
       self.spas_active = spas_active
