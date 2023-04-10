@@ -55,7 +55,7 @@ class CarState(CarStateBase):
     self.long_control_enabled = Params().get_bool('LongControlEnabled')
 
     self.spas_enabled = CP.spasEnabled
-    self.rspa_enabled = CP.rspaEnabled
+    self.rspa_enabled = False
     self.mdps11_stat = 0
     self.spas_mode_sequence = 2 if LEGACY_SAFETY_MODE_CAR else 1
 
