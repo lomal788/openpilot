@@ -70,7 +70,10 @@ class CarState(CarStateBase):
     ret.doorOpen = any([cp.vl["CGW1"]['CF_Gway_DrvDrSw'], cp.vl["CGW1"]['CF_Gway_AstDrSw'],
                         cp.vl["CGW2"]['CF_Gway_RLDrSw'], cp.vl["CGW2"]['CF_Gway_RRDrSw']])
 
-    ret.seatbeltUnlatched = cp.vl["CGW1"]['CF_Gway_DrvSeatBeltSw'] == 0
+    if self.CP.carFingerprint == CAR.KIA_FORTE_KOUP_2013:
+      ret.seatbeltUnlatched = cp.vl["CLU2"]['CF_Clu_DrvSeatBeltSw'] != 0
+    else:
+      ret.seatbeltUnlatched = cp.vl["CGW1"]['CF_Gway_DrvSeatBeltSw'] == 0
 
     self.is_set_speed_in_mph = bool(cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"])
     self.speed_conv_to_ms = CV.MPH_TO_MS if self.is_set_speed_in_mph else CV.KPH_TO_MS
@@ -300,6 +303,8 @@ class CarState(CarStateBase):
       ("CF_Gway_DrvSeatBeltInd", "CGW4", 1),
 
       ("CF_Gway_DrvSeatBeltSw", "CGW1", 0),
+      ("CF_Clu_DrvSeatBeltSw", "CLU2", 0),
+
       ("CF_Gway_DrvDrSw", "CGW1", 0),       # Driver Door
       ("CF_Gway_AstDrSw", "CGW1", 0),       # Passenger door
       ("CF_Gway_RLDrSw", "CGW2", 0),        # Rear reft door
