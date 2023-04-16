@@ -190,6 +190,12 @@ void ignition_can_hook(CAN_FIFOMailBox_TypeDef *to_push) {
       // GTW_status
       ignition_can = (GET_BYTE(to_push, 0) & 0x1) != 0;
     }
+
+    // Add Ignition Hook for Forte koup 2013
+    // EMS16 , EMS 11
+    if ( (addr == 0x260) && (len == 8) ) {
+      ignition_can = GET_BYTES_04(to_push) != 0U;
+    }
   }
 }
 

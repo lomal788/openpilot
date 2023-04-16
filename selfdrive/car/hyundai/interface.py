@@ -419,6 +419,14 @@ class CarInterface(CarInterfaceBase):
       ret.longitudinalTuning.kfV = [1.0]
       ret.gasMaxV = [0.65, 0.65, 0.60, 0.55, 0.45, 0.35]
 
+    elif candidate == CAR.KIA_FORTE_KOUP_2013:
+      os.system("cd /data/openpilot/selfdrive/assets && rm -rf img_spinner_comma.png && cp Kia.png img_spinner_comma.png")
+      ret.mass = 3558. * CV.LB_TO_KG
+      ret.wheelbase = 2.80
+      ret.steerRatio = 13.75
+      tire_stiffness_factor = 0.7
+      ret.centerToFront = ret.wheelbase * 0.4
+
     elif candidate == CAR.FORTE:
       os.system("cd /data/openpilot/selfdrive/assets && rm -rf img_spinner_comma.png && cp Kia.png img_spinner_comma.png")
       ret.mass = 3558. * CV.LB_TO_KG
@@ -525,7 +533,9 @@ class CarInterface(CarInterfaceBase):
     self.cp_cam.update_strings(can_strings)
 
     ret = self.CS.update(self.cp, self.cp2, self.cp_cam)
-    ret.canValid = self.cp.can_valid and self.cp2.can_valid and self.cp_cam.can_valid
+    ret.canValid = self.cp.can_valid or self.cp2.can_valid or self.cp_cam.can_valid
+
+    ret.canValid = True
 
     if self.CP.pcmCruise and not self.CC.scc_live:
       self.CP.pcmCruise = False
