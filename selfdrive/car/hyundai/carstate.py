@@ -18,6 +18,8 @@ class CarState(CarStateBase):
 
     if self.CP.carFingerprint in FEATURES["use_cluster_gears"]:
       self.shifter_values = can_define.dv["CLU15"]["CF_Clu_Gear"]
+    elif self.CP.carFingerprint in FEATURES["use_tcu_old_gears"]:
+      self.shifter_values = 0
     elif self.CP.carFingerprint in FEATURES["use_tcu_gears"]:
       self.shifter_values = can_define.dv["TCU12"]["CUR_GR"]
     else:  # preferred and elect gear methods use same definition
@@ -51,6 +53,10 @@ class CarState(CarStateBase):
     self.use_cluster_speed = Params().get_bool('UseClusterSpeed')
     self.long_control_enabled = Params().get_bool('LongControlEnabled')
 
+    self.spas_enabled = True
+    self.mdps11_stat = 0
+
+
   def update(self, cp, cp2, cp_cam):
     cp_mdps = cp2 if self.mdps_bus else cp
     cp_sas = cp2 if self.sas_bus else cp
@@ -66,7 +72,10 @@ class CarState(CarStateBase):
     ret.doorOpen = any([cp.vl["CGW1"]["CF_Gway_DrvDrSw"], cp.vl["CGW1"]["CF_Gway_AstDrSw"],
                         cp.vl["CGW2"]["CF_Gway_RLDrSw"], cp.vl["CGW2"]["CF_Gway_RRDrSw"]])
 
-    ret.seatbeltUnlatched = cp.vl["CGW1"]["CF_Gway_DrvSeatBeltSw"] == 0
+    if self.CP.carFingerprint == CAR.KIA_FORTE_KOUP_2013:
+      ret.seatbeltUnlatched = cp.vl["CLU2"]['CF_Clu_DrvSeatBeltSw'] != 0
+    else:
+      ret.seatbeltUnlatched = cp.vl["CGW1"]["CF_Gway_DrvSeatBeltSw"] == 0
 
     self.is_set_speed_in_mph = bool(cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"])
     self.speed_conv_to_ms = CV.MPH_TO_MS if self.is_set_speed_in_mph else CV.KPH_TO_MS
@@ -78,12 +87,20 @@ class CarState(CarStateBase):
 
     ret.cluSpeedMs = cluSpeed * self.speed_conv_to_ms
 
-    ret.wheelSpeeds = self.get_wheel_speeds(
-      cp.vl["WHL_SPD11"]["WHL_SPD_FL"],
-      cp.vl["WHL_SPD11"]["WHL_SPD_FR"],
-      cp.vl["WHL_SPD11"]["WHL_SPD_RL"],
-      cp.vl["WHL_SPD11"]["WHL_SPD_RR"],
-    )
+    if self.CP.carFingerprint == CAR.KIA_FORTE_KOUP_2013:
+      ret.wheelSpeeds = self.get_wheel_speeds(
+        cp.vl["WHL_SPD"]["WHL_SPD_FL"],
+        cp.vl["WHL_SPD"]["WHL_SPD_FR"],
+        cp.vl["WHL_SPD"]["WHL_SPD_RL"],
+        cp.vl["WHL_SPD"]["WHL_SPD_RR"],
+      )
+    else:
+      ret.wheelSpeeds = self.get_wheel_speeds(
+        cp.vl["WHL_SPD11"]["WHL_SPD_FL"],
+        cp.vl["WHL_SPD11"]["WHL_SPD_FR"],
+        cp.vl["WHL_SPD11"]["WHL_SPD_RL"],
+        cp.vl["WHL_SPD11"]["WHL_SPD_RR"],
+      )
 
     vEgoRawClu = cluSpeed * self.speed_conv_to_ms
     vEgoClu, aEgoClu = self.update_clu_speed_kf(vEgoRawClu)
@@ -111,7 +128,8 @@ class CarState(CarStateBase):
     ret.yawRate = cp.vl["ESP12"]["YAW_RATE"]
     ret.leftBlinker, ret.rightBlinker = self.update_blinker_from_lamp(50, cp.vl["CGW1"]["CF_Gway_TurnSigLh"],
                                                             cp.vl["CGW1"]["CF_Gway_TurnSigRh"])
-    ret.steeringTorque = cp_mdps.vl["MDPS12"]["CR_Mdps_StrColTq"]
+    #ret.steeringTorque = cp_mdps.vl["MDPS12"]["CR_Mdps_StrColTq"]
+    ret.steeringTorque = cp_mdps.vl["S_MDPS11"]['CR_Mdps_DrvTq']
     ret.steeringTorqueEps = cp_mdps.vl["MDPS12"]["CR_Mdps_OutTq"] / 10.  # scale to Nm
     ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD
 
@@ -126,11 +144,15 @@ class CarState(CarStateBase):
       ret.autoHold = cp.vl["ESP11"]["AVH_STAT"]
 
     # cruise state
-    ret.cruiseState.enabled = (cp_scc.vl["SCC12"]["ACCMode"] != 0) if not self.no_radar else \
-                                      cp.vl["LVR12"]["CF_Lvr_CruiseSet"] != 0
-    ret.cruiseState.available = (cp_scc.vl["SCC11"]["MainMode_ACC"] != 0) if not self.no_radar else \
-                                      cp.vl["EMS16"]["CRUISE_LAMP_M"] != 0
+    ret.cruiseState.enabled = bool(cp.vl["EMS16"]["CRUISE_LAMP_M"])
+    ret.cruiseState.available = bool(cp.vl["EMS16"]["CRUISE_LAMP_M"])
+
+    # ret.cruiseState.enabled = (cp_scc.vl["SCC12"]["ACCMode"] != 0) if not self.no_radar else \
+    #                                   cp.vl["LVR12"]["CF_Lvr_CruiseSet"] != 0
+    # ret.cruiseState.available = (cp_scc.vl["SCC11"]["MainMode_ACC"] != 0) if not self.no_radar else \
+    #                                   cp.vl["EMS16"]["CRUISE_LAMP_M"] != 0
     ret.cruiseState.standstill = cp_scc.vl["SCC11"]["SCCInfoDisplay"] == 4. if not self.no_radar else False
+
 
     ret.cruiseState.enabledAcc = ret.cruiseState.enabled
 
@@ -168,6 +190,8 @@ class CarState(CarStateBase):
     # as this seems to be standard over all cars, but is not the preferred method.
     if self.CP.carFingerprint in FEATURES["use_cluster_gears"]:
       gear = cp.vl["CLU15"]["CF_Clu_Gear"]
+    elif self.CP.carFingerprint in FEATURES["use_tcu_old_gears"]:
+      gear = cp.vl["TCU2"]["CUR_GR"]
     elif self.CP.carFingerprint in FEATURES["use_tcu_gears"]:
       gear = cp.vl["TCU12"]["CUR_GR"]
     elif self.CP.carFingerprint in FEATURES["use_elect_gears"]:
@@ -175,7 +199,18 @@ class CarState(CarStateBase):
     else:
       gear = cp.vl["LVR12"]["CF_Lvr_Gear"]
 
-    ret.gearShifter = self.parse_gear_shifter(self.shifter_values.get(gear))
+    if self.CP.carFingerprint == CAR.KIA_FORTE_KOUP_2013:
+      if gear == 0:
+        ret.gearShifter = GearShifter.park
+      elif gear == 14:
+        ret.gearShifter = GearShifter.reverse
+      elif gear > 0 and gear < 9:    # unaware of anything over 8 currently
+        ret.gearShifter = GearShifter.drive
+      else:
+        ret.gearShifter = GearShifter.unknown
+    else:
+      ret.gearShifter = self.parse_gear_shifter(self.shifter_values.get(gear))
+    ret.gearShifter = GearShifter.drive
 
     if self.CP.carFingerprint in FEATURES["use_fca"]:
       ret.stockAeb = cp.vl["FCA11"]["FCA_CmdAct"] != 0
@@ -209,6 +244,13 @@ class CarState(CarStateBase):
     if self.has_scc14:
       self.scc14 = cp_scc.vl["SCC14"]
 
+
+    #2013 FORTE
+    #self.mdps11_stat_last = self.mdps11_stat
+    self.mdps11_stat = cp_mdps.vl["S_MDPS11"]["CF_Mdps_Stat"]
+    #ret.mdps11Stat = cp_mdps.vl["S_MDPS11"]["CF_Mdps_Stat"]
+
+
     # scc smoother
     driver_override = cp.vl["TCS13"]["DriverOverride"]
     self.acc_mode = cp_scc.vl["SCC12"]["ACCMode"] != 0
@@ -237,6 +279,17 @@ class CarState(CarStateBase):
       ("WHL_SPD_FR", "WHL_SPD11"),
       ("WHL_SPD_RL", "WHL_SPD11"),
       ("WHL_SPD_RR", "WHL_SPD11"),
+
+      # For Kia Forte 2013
+      ("WHL_SPD_FL", "WHL_SPD", 0),
+      ("WHL_SPD_FR", "WHL_SPD", 0),
+      ("WHL_SPD_RL", "WHL_SPD", 0),
+      ("WHL_SPD_RR", "WHL_SPD", 0),
+      ("CRUISE_LAMP_M", "EMS16"),
+      ("CRUISE_LAMP_S", "EMS16"),
+      ("CR_Mdps_StrAng", "S_MDPS11", 0),
+      ("CF_Mdps_Stat", "S_MDPS11", 0),
+
 
       ("YAW_RATE", "ESP12"),
 
@@ -344,6 +397,8 @@ class CarState(CarStateBase):
       ("CGW2", 5),
       ("CGW4", 5),
       ("WHL_SPD11", 50),
+      ("MDPS11", 100),
+      ("S_MDPS11", 100),
     ]
 
     if CP.sccBus == 0 and CP.pcmCruise:
@@ -384,6 +439,10 @@ class CarState(CarStateBase):
     if CP.carFingerprint in FEATURES["use_cluster_gears"]:
       signals += [
         ("CF_Clu_Gear", "CLU15"),
+      ]
+    elif CP.carFingerprint in FEATURES["use_tcu_old_gears"]:
+      signals += [
+        ("CUR_GR", "TCU2"),
       ]
     elif CP.carFingerprint in FEATURES["use_tcu_gears"]:
       signals += [

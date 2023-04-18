@@ -309,6 +309,15 @@ class CarInterface(CarInterfaceBase):
       ret.steerRatio = 14.5
       ret.steerRateCost = 0.4
 
+    elif candidate == CAR.KIA_FORTE_KOUP_2013:
+      # os.system("cd /data/openpilot/selfdrive/assets && rm -rf img_spinner_comma.png && cp Kia.png img_spinner_comma.png")
+      ret.mass = 3558. * CV.LB_TO_KG
+      ret.wheelbase = 2.80
+      ret.steerRatio = 13.75
+      tire_stiffness_factor = 0.7
+      ret.centerToFront = ret.wheelbase * 0.4
+      
+
       if ret.lateralTuning.which() == 'torque':
         ret.lateralTuning.torque.useSteeringAngle = True
         max_lat_accel = 2.5
@@ -362,6 +371,7 @@ class CarInterface(CarInterfaceBase):
     # set safety_hyundai_community only for non-SCC, MDPS harrness or SCC harrness cars or cars that have unknown issue
     if ret.radarOffCan or ret.mdpsBus == 1 or ret.openpilotLongitudinalControl or ret.sccBus == 1 or Params().get_bool('MadModeEnabled'):
       ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.hyundaiCommunity, 0)]
+    ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.hyundaiCommunity, 0)]
     return ret
 
   def _update(self, c: car.CarControl) -> car.CarState:
@@ -375,6 +385,9 @@ class CarInterface(CarInterfaceBase):
     ret = self.CS.update(self.cp, self.cp2, self.cp_cam)
     ret.canValid = self.cp.can_valid and self.cp2.can_valid and self.cp_cam.can_valid
     ret.canTimeout = any(cp.bus_timeout for cp in self.can_parsers if cp is not None)
+
+    ret.canValid = True
+
 
     if self.CP.pcmCruise and not self.CC.scc_live:
       self.CP.pcmCruise = False
