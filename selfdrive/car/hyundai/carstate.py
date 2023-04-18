@@ -248,6 +248,7 @@ class CarState(CarStateBase):
     #2013 FORTE
     #self.mdps11_stat_last = self.mdps11_stat
     self.mdps11_stat = cp_mdps.vl["S_MDPS11"]["CF_Mdps_Stat"]
+    self.mdps11_strang = cp_mdps.vl["S_MDPS11"]["CR_Mdps_StrAng"]
     #ret.mdps11Stat = cp_mdps.vl["S_MDPS11"]["CF_Mdps_Stat"]
 
 

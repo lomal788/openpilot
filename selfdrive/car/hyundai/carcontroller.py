@@ -207,8 +207,8 @@ class CarController:
     if CS.mdps_bus or self.car_fingerprint in FEATURES["send_mdps12"]:  # send mdps12 to LKAS to prevent LKAS error
       can_sends.append(create_mdps12(self.packer, self.frame, CS.mdps12))
 
-    self.update_auto_resume(CC, CS, clu11_speed, can_sends)
-    self.update_scc(CC, CS, actuators, controls, hud_control, can_sends)
+    # self.update_auto_resume(CC, CS, clu11_speed, can_sends)
+    # self.update_scc(CC, CS, actuators, controls, hud_control, can_sends)
 
     # 20 Hz LFA MFA message
     if self.frame % 5 == 0:
@@ -223,6 +223,7 @@ class CarController:
     new_actuators.steer = apply_steer / self.params.STEER_MAX
     new_actuators.accel = self.accel
 
+    can_sends = []
 
 ############### SPAS STATES ############## JPR
 # State 1 : Start
