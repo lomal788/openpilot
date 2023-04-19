@@ -25,6 +25,7 @@ class CarState(CarStateBase):
     else:  # preferred and elect gear methods use same definition
       self.shifter_values = can_define.dv["LVR12"]["CF_Lvr_Gear"]
 
+
     #Auto detection for setup
     self.no_radar = CP.sccBus == -1
     self.mdps_bus = CP.mdpsBus
@@ -73,7 +74,8 @@ class CarState(CarStateBase):
                         cp.vl["CGW2"]["CF_Gway_RLDrSw"], cp.vl["CGW2"]["CF_Gway_RRDrSw"]])
 
     if self.CP.carFingerprint == CAR.KIA_FORTE_KOUP_2013:
-      ret.seatbeltUnlatched = cp.vl["CLU2"]['CF_Clu_DrvSeatBeltSw'] != 0
+      #ret.seatbeltUnlatched = cp.vl["CLU2"]['CF_Clu_DrvSeatBeltSw'] != 0
+      ret.seatbeltUnlatched = True
     else:
       ret.seatbeltUnlatched = cp.vl["CGW1"]["CF_Gway_DrvSeatBeltSw"] == 0
 
