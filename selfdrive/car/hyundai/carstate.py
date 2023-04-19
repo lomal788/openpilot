@@ -292,6 +292,8 @@ class CarState(CarStateBase):
       ("CRUISE_LAMP_S", "EMS16"),
       ("CR_Mdps_StrAng", "S_MDPS11", 0),
       ("CF_Mdps_Stat", "S_MDPS11", 0),
+      ("CR_Mdps_DrvTq", "S_MDPS11", 0),
+
 
 
       ("YAW_RATE", "ESP12"),
