@@ -97,12 +97,12 @@ class CarController:
     self.steer_fault_max_angle = CP.steerFaultMaxAngle
     self.steer_fault_max_frames = CP.steerFaultMaxFrames
 
-    if CP.spasEnabled:
-      self.last_apply_angle = 0.0
-      self.en_spas = 2
-      self.mdps11_stat_last = 0
-      self.spas_always = Params().get_bool('spasAlways')
-      self.lkas_active = False
+    # if CP.spasEnabled:
+    self.last_apply_angle = 0.0
+    self.en_spas = 2
+    self.mdps11_stat_last = 0
+    self.spas_always = Params().get_bool('spasAlways')
+    self.lkas_active = False
 
 
   def update(self, CC, CS, controls):
