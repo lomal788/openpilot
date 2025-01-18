@@ -255,8 +255,8 @@ BO_ 912 SPAS11: 7 SPAS
  SG_ CF_Spas_BeepAlarm : 24|4@1+ (1.0,0.0) [0.0|15.0] ""  CLU
  SG_ CF_Spas_Mode_Seq : 28|2@1+ (1.0,0.0) [0.0|3.0] ""  CLU
  SG_ CF_Spas_AliveCnt : 32|8@1+ (1.0,0.0) [0.0|255.0] ""  MDPS
- SG_ CF_Spas_Chksum : 40|8@1+ (1.0,0.0) [0.0|255.0] ""  MDPS
  SG_ CF_Spas_PasVol : 48|3@1+ (1.0,0.0) [0.0|7.0] ""  CGW,CLU
+ SG_ CF_Spas_Chksum : 56|8@1+ (1.0,0.0) [0.0|255.0] ""  MDPS
 
 BO_ 1168 EPB11: 7 EPB
  SG_ EPB_I_LAMP : 0|4@1+ (1.0,0.0) [0.0|15.0] ""  BCM,CLU,CUBIS,ESC,IBOX

@@ -140,7 +140,9 @@ class CarState(CarStateBase):
     ret.steeringTorqueEps = cp_mdps.vl["MDPS12"]['CR_Mdps_OutTq'] / 10
 
     if self.CP.carFingerprint == CAR.KIA_FORTE_KOUP_2013:
-      ret.steeringWheelTorque = cp_mdps.vl["S_MDPS11"]['CR_Mdps_DrvTq']
+      # ret.steeringWheelTorque = cp_mdps.vl["S_MDPS11"]['CR_Mdps_DrvTq']
+      ret.steeringWheelTorque = cp_mdps.vl["VSM2"]['CR_Mdps_OutTq']
+      ret.steeringTorque = cp_mdps.vl["VSM2"]['CR_Mdps_OutTq']
     else:
       ret.steeringWheelTorque = cp_mdps.vl["MDPS11"]['CR_Mdps_DrvTq'] 
 
@@ -333,6 +335,7 @@ class CarState(CarStateBase):
       ("WHL_SPD_RR", "WHL_SPD", 0),
       ("CRUISE_LAMP_M", "EMS16"),
       ("CRUISE_LAMP_S", "EMS16"),
+      ("CR_Mdps_OutTq", "VSM2"),
 
 
       ("YAW_RATE", "ESP12", 0),

@@ -176,7 +176,8 @@ class SpasRspaController:
       self.rate = abs(CS.out.steeringAngleDeg - self.lastSteeringAngleDeg)
       apply_angle = clip(actuators.steeringAngleDeg, -1*(STEER_ANG_MAX), STEER_ANG_MAX)
       apply_diff = abs(apply_angle - CS.out.steeringAngleDeg)
-      spas_active = c.active and CS.out.vEgo < 26.82 and (CS.out.vEgo < SPAS_SWITCH or apply_diff > 3.2 and self.dynamicSpas and not CS.out.steeringPressed or abs(apply_angle) > 3. and self.spas_active or maxTQ - STEER_MAX_OFFSET < apply_steer and self.dynamicSpas)      
+      # spas_active = c.active and CS.out.vEgo < 26.82 and (CS.out.vEgo < SPAS_SWITCH or apply_diff > 3.2 and self.dynamicSpas and not CS.out.steeringPressed or abs(apply_angle) > 3. and self.spas_active or maxTQ - STEER_MAX_OFFSET < apply_steer and self.dynamicSpas)
+      spas_active = c.active and (CS.out.vEgo < SPAS_SWITCH or apply_diff > 3.2 and self.dynamicSpas and not CS.out.steeringPressed or abs(apply_angle) > 3. and self.spas_active or maxTQ - STEER_MAX_OFFSET < apply_steer and self.dynamicSpas)
       if (frame % 2) == 0: # Run this at same speed as the SPAS11 message BC thats how fast the steering updates. - JPR
         if CS.mdps11_stat == 5 and apply_diff > 1.75: # Rate limit for when steering angle is not apply_angle or "engage" rate. - JPR
           self.ratelimit += 0.03 # Increase each cycle - JPR
